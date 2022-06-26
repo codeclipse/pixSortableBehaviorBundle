@@ -1,49 +1,22 @@
 <?php
 
-/*
- * This file is part of the pixSortableBehaviorBundle.
- *
- * (c) Nicolas Ricci <nicolas.ricci@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
+declare(strict_types=1);
 
-namespace Pix\SortableBehaviorBundle\Services;
+namespace Codeclipse\SortableBehaviorBundle\Services;
 
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
+use ReflectionClass;
 
-/**
- * Class PositionORMHandler
- *
- * @package Pix\SortableBehaviorBundle
- */
 class PositionORMHandler extends PositionHandler
 {
-    /**
-     * @var array
-     */
-    private static $cacheLastPosition = [];
+    private static array $cacheLastPosition = [];
 
-    /**
-     * @var EntityManagerInterface
-     */
-    protected $em;
-
-    /**
-     * @param EntityManagerInterface $entityManager
-     */
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(protected EntityManagerInterface $em)
     {
-        $this->em = $entityManager;
     }
 
-    /**
-     * @param object $entity
-     * @return int
-     */
-    public function getLastPosition($entity)
+    public function getLastPosition(object $entity): int
     {
         $entityClass = ClassUtils::getClass($entity);
         $parentEntityClass = true;
@@ -51,15 +24,15 @@ class PositionORMHandler extends PositionHandler
         {
             $parentEntityClass = ClassUtils::getParentClass($entityClass);
             if ($parentEntityClass) {
-                $reflection = new \ReflectionClass($parentEntityClass);
+                $reflection = new ReflectionClass($parentEntityClass);
                 if($reflection->isAbstract()) {
                     break;
                 }
                 $entityClass = $parentEntityClass;
             }
         }
-        
-        $groups      = $this->getSortableGroupsFieldByEntity($entityClass);
+
+        $groups = $this->getSortableGroupsFieldByEntity($entityClass);
 
         $cacheKey = $this->getCacheKeyForLastPosition($entity, $groups);
         if (!isset(self::$cacheLastPosition[$cacheKey])) {
@@ -83,18 +56,13 @@ class PositionORMHandler extends PositionHandler
                 }
             }
 
-            self::$cacheLastPosition[$cacheKey] = (int)$qb->getQuery()->getSingleScalarResult();
+            self::$cacheLastPosition[$cacheKey] = (int) $qb->getQuery()->getSingleScalarResult();
         }
 
         return self::$cacheLastPosition[$cacheKey];
     }
 
-    /**
-     * @param object $entity
-     * @param array  $groups
-     * @return string
-     */
-    private function getCacheKeyForLastPosition($entity, $groups)
+    private function getCacheKeyForLastPosition(object $entity, array $groups): string
     {
         $cacheKey = ClassUtils::getClass($entity);
 

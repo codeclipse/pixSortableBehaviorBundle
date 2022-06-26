@@ -1,14 +1,8 @@
 <?php
-/*
- * This file is part of the pixSortableBehaviorBundle.
- *
- * (c) Nicolas Ricci <nicolas.ricci@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
 
-namespace Pix\SortableBehaviorBundle\DependencyInjection;
+declare(strict_types=1);
+
+namespace Codeclipse\SortableBehaviorBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -25,10 +19,10 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $supportedDrivers = array('orm', 'mongodb');
+        $supportedDrivers = ['orm', 'mongodb'];
 
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('pix_sortable_behavior');
+        $treeBuilder = new TreeBuilder('codeclipse_sortable_behavior');
+        $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
             ->children()
@@ -45,6 +39,7 @@ class Configuration implements ConfigurationInterface
                 ->cannotBeEmpty()
                 ->defaultValue('orm')
             ->end()
+
             ->arrayNode('position_field')
                 ->addDefaultsIfNotSet()
                 ->children()

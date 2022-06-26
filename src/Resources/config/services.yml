@@ -1,0 +1,22 @@
+services:
+    codeclipse_sortable_behavior.position.orm:
+        class: Codeclipse\SortableBehaviorBundle\Services\PositionORMHandler
+        public: false
+        arguments:
+            - "@doctrine.orm.entity_manager"
+        calls:
+            - [ 'setPositionField', ["%codeclipse.sortable.behavior.position.field%"]]
+            - [ 'setSortableGroups', ["%codeclipse.sortable.behavior.sortable_groups%"]]
+
+    codeclipse_sortable_behavior.position.mongodb:
+        class: Codeclipse\SortableBehaviorBundle\Services\PositionODMHandler
+        public: false
+        arguments:
+            - "@doctrine_mongodb.odm.document_manager"
+        calls:
+            - [ 'setPositionField', ["%codeclipse.sortable.behavior.position.field%"]]
+
+    Codeclipse\SortableBehaviorBundle\Twig\SortableBehaviorExtension:
+        autoconfigure: true
+        autowire: true
+        public: false
